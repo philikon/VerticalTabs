@@ -361,7 +361,9 @@ VTTabbrowserTabs.prototype = {
     _patchedMethods: ["_positionPinnedTabs",
                       "_getDropIndex",
                       "_isAllowedForDataTransfer",
-                      "_setEffectAllowedForDataTransfer"
+                      "_setEffectAllowedForDataTransfer",
+                      "_animateTabMove",
+                      "_finishAnimateTabMove",
                       ],
     swapMethods: function swapMethods() {
         const tabs = this.tabs;
@@ -426,7 +428,7 @@ VTTabbrowserTabs.prototype = {
                     return dt.effectAllowed = "none";
                 }
 
-                return dt.effectAllowed = "copyMove";
+                return dt.effectAllowed = event.ctrlKey ? "copy" : "move";
             }
         }
 
@@ -435,6 +437,24 @@ VTTabbrowserTabs.prototype = {
             return dt.effectAllowed = dt.dropEffect = "link";
         }
         return dt.effectAllowed = "none";
+    },
+
+    // This function is supposed to show an animation while the tab is being
+    // moved (not copied), and to update the tab drop index.
+    _animateTabMove: function(event) {
+        // Save the drop index here, because the drop handler won't move
+        // the tab without that.
+        let draggedTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
+        draggedTab._dragData.animDropIndex = this._getDropIndex(event);
+
+        // We don't show a particular animation, because doing so seems to 
+        // break some add-ons. I guess this is the same reason why
+        // the "dragover" event handler is disabled. -- Tey'
+    },
+
+    _finishAnimateTabMove: function() {
+        // TODO we might want to do something here. For now we just
+        // don't do anything which is better than doing something stupid.
     },
 
     // Calculate the drop indicator's position for vertical tabs.
