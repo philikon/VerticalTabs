@@ -350,12 +350,12 @@ VTTabbrowserTabs.prototype = {
     init: function() {
         this.swapMethods();
         this.onDragOver = this.onDragOver.bind(this);
-        tabs.addEventListener('dragover', this.onDragOver, false);
+        this.tabs.addEventListener('dragover', this.onDragOver, false);
     },
 
     unload: function() {
         this.swapMethods();
-        tabs.removeEventListener('dragover', this.onDragOver, false);
+        this.tabs.removeEventListener('dragover', this.onDragOver, false);
     },
 
     _patchedMethods: ["_positionPinnedTabs",
@@ -447,9 +447,16 @@ VTTabbrowserTabs.prototype = {
         let draggedTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
         draggedTab._dragData.animDropIndex = this._getDropIndex(event);
 
-        // We don't show a particular animation, because doing so seems to 
-        // break some add-ons. I guess this is the same reason why
-        // the "dragover" event handler is disabled. -- Tey'
+        // Show the drop indicator, which will be positioned in our "dragover" handler.
+        this._tabDropIndicator.collapsed = false;
+
+        /* TODO: it would be better if the drop indicator were different for copy and move (a
+         *       different color for instance).
+         *       In Mozilla implementation, the tab indicator is only used for copy, and an
+         *       animation is used for move (the tabs are shifted in the tab bar as the mouse drags
+         *       the tab to be moved).
+         *       I have no idea how to implement such an animation tough. -- Tey'
+         */
     },
 
     _finishAnimateTabMove: function() {
@@ -476,7 +483,7 @@ VTTabbrowserTabs.prototype = {
         }
 
         newMargin += ind.clientHeight / 2;
-        ind.style.MozTransform = "translate(0, " + Math.round(newMargin) + "px)";
+        ind.style.transform = "translate(0, " + Math.round(newMargin) + "px)";
         ind.style.MozMarginStart = null;
         ind.style.marginTop = null;
         ind.style.maxWidth = rect.width + "px";
