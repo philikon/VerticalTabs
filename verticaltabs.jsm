@@ -37,7 +37,6 @@
 Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://verticaltabs/tabdatastore.jsm");
 Components.utils.import("resource://verticaltabs/multiselect.jsm");
-Components.utils.import("resource://verticaltabs/groups.jsm");
 
 const EXPORTED_SYMBOLS = ["VerticalTabs"];
 
@@ -85,12 +84,10 @@ VerticalTabs.prototype = {
         this.vtTabs = new VTTabbrowserTabs(tabs);
         this.tabIDs = new VTTabIDs(tabs);
         this.multiSelect = new VTMultiSelect(tabs);
-        this.groups = new VTGroups(tabs);
         this.unloaders.push(function() {
             this.vtTabs.unload();
             this.tabIDs.unload();
             this.multiSelect.unload();
-            this.groups.unload();
         });
     },
 
