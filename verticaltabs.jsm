@@ -56,9 +56,9 @@ function VerticalTabs(window) {
 }
 VerticalTabs.prototype = {
 
-    init: function() {
+    init: function init() {
         this.window.VerticalTabs = this;
-        this.unloaders.push(function() {
+        this.unloaders.push(function unloadWindowGlobal() {
             delete this.window.VerticalTabs;
         });
 
@@ -84,24 +84,24 @@ VerticalTabs.prototype = {
         this.vtTabs = new VTTabbrowserTabs(tabs);
         this.tabIDs = new VTTabIDs(tabs);
         this.multiSelect = new VTMultiSelect(tabs);
-        this.unloaders.push(function() {
+        this.unloaders.push(function unloadDelegates() {
             this.vtTabs.unload();
             this.tabIDs.unload();
             this.multiSelect.unload();
         });
     },
 
-    installStylesheet: function(uri) {
+    installStylesheet: function installStylesheet(uri) {
         const document = this.document;
         let pi = document.createProcessingInstruction(
           "xml-stylesheet", "href=\"" + uri + "\" type=\"text/css\"");
         document.insertBefore(pi, document.documentElement);
-        this.unloaders.push(function () {
+        this.unloaders.push(function unloadStylesheet() {
             document.removeChild(pi);
         });
     },
 
-    rearrangeXUL: function() {
+    rearrangeXUL: function rearrangeXUL() {
         const window = this.window;
         const document = this.document;
 
@@ -180,7 +180,7 @@ VerticalTabs.prototype = {
             this.initTab(tabs.childNodes[i]);
         }
 
-        this.unloaders.push(function () {
+        this.unloaders.push(function unloadRearrangeXUL() {
             // Move the bottom back to being the next sibling of contentbox.
             browserbox.insertBefore(bottom, contentbox.nextSibling);
 
@@ -227,7 +227,7 @@ VerticalTabs.prototype = {
         });
     },
 
-    initContextMenu: function() {
+    initContextMenu: function initContextMenu() {
         const document = this.document;
         const tabs = document.getElementById("tabbrowser-tabs");
 
@@ -241,19 +241,19 @@ VerticalTabs.prototype = {
 
         tabs.contextMenu.addEventListener("popupshowing", this, false);
 
-        this.unloaders.push(function () {
+        this.unloaders.push(function unloadContextMenu() {
             tabs.contextMenu.removeChild(closeMultiple);
             tabs.contextMenu.removeEventListener("popupshowing", this, false);
         });
     },
 
-    initTab: function(aTab) {
+    initTab: function initTab(aTab) {
         aTab.setAttribute("align", "stretch");
         aTab.maxWidth = 65000;
         aTab.minWidth = 0;
     },
 
-    onTabbarResized: function() {
+    onTabbarResized: function onTabbarResized() {
         let tabs = this.document.getElementById("tabbrowser-tabs");
         this.window.setTimeout(function() {
             Services.prefs.setIntPref("extensions.verticaltabs.width",
@@ -261,14 +261,14 @@ VerticalTabs.prototype = {
         }, 10);
 	},
 
-    observeRightPref: function () {
+    observeRightPref: function observeRightPref() {
       Services.prefs.addObserver("extensions.verticaltabs.right", this, false);
-      this.unloaders.push(function () {
+      this.unloaders.push(function unloadRightPref() {
         Services.prefs.removeObserver("extensions.verticaltabs.right", this, false);
       });
     },
 
-    observe: function (subject, topic, data) {
+    observe: function observe(subject, topic, data) {
       if (topic != "nsPref:changed" || data != "extensions.verticaltabs.right") {
         return;
       }
@@ -280,7 +280,7 @@ VerticalTabs.prototype = {
       }
     },
 
-    unload: function() {
+    unload: function unload() {
       this.unloaders.forEach(function(func) {
         func.call(this);
       }, this);
@@ -288,7 +288,7 @@ VerticalTabs.prototype = {
 
     /*** Event handlers ***/
 
-    handleEvent: function(aEvent) {
+    handleEvent: function handleEvent(aEvent) {
         switch (aEvent.type) {
         case "DOMContentLoaded":
             this.init();
@@ -305,17 +305,17 @@ VerticalTabs.prototype = {
         }
     },
 
-    onTabOpen: function(aEvent) {
+    onTabOpen: function onTabOpen(aEvent) {
         this.initTab(aEvent.target);
     },
 
-    onMouseUp: function(aEvent) {
+    onMouseUp: function onMouseUp(aEvent) {
         if (aEvent.target.getAttribute("id") == "verticaltabs-splitter") {
             this.onTabbarResized();
         }
     },
 
-    onPopupShowing: function(aEvent) {
+    onPopupShowing: function onPopupShowing(aEvent) {
         let closeTabs = this.document.getElementById("context_verticalTabsCloseMultiple");
         let tabs = this.multiSelect.getSelected();
         if (tabs.length > 1) {
@@ -344,13 +344,13 @@ function VTTabbrowserTabs(tabs) {
 }
 VTTabbrowserTabs.prototype = {
 
-    init: function() {
+    init: function init() {
         this.swapMethods();
         this.onDragOver = this.onDragOver.bind(this);
         this.tabs.addEventListener('dragover', this.onDragOver, false);
     },
 
-    unload: function() {
+    unload: function unload() {
         this.swapMethods();
         this.tabs.removeEventListener('dragover', this.onDragOver, false);
     },
@@ -369,7 +369,7 @@ VTTabbrowserTabs.prototype = {
         }, this);
     },
 
-    swapMethod: function(obj1, obj2, methodname) {
+    swapMethod: function swapMethod(obj1, obj2, methodname) {
       let method1 = obj1[methodname];
       let method2 = obj2[methodname];
       obj1[methodname] = method2;
@@ -378,12 +378,12 @@ VTTabbrowserTabs.prototype = {
 
     // Modified methods below.
 
-    _positionPinnedTabs: function() {
+    _positionPinnedTabs: function _positionPinnedTabs() {
         // TODO we might want to do something here. For now we just
         // don't do anything which is better than doing something stupid.
     },
 
-    _getDropIndex: function(event) {
+    _getDropIndex: function _getDropIndex(event) {
         var tabs = this.childNodes;
         var tab = this._getDragTargetTab(event);
         // CHANGE for Vertical Tabs: no ltr handling, X -> Y, width -> height
@@ -396,7 +396,7 @@ VTTabbrowserTabs.prototype = {
         return tabs.length;
     },
 
-    _isAllowedForDataTransfer: function(node) {
+    _isAllowedForDataTransfer: function _isAllowedForDataTransfer(node) {
         const window = node.ownerDocument.defaultView;
         return (node instanceof window.XULElement
                 && node.localName == "tab"
@@ -406,7 +406,7 @@ VTTabbrowserTabs.prototype = {
 
     },
 
-    _setEffectAllowedForDataTransfer: function(event) {
+    _setEffectAllowedForDataTransfer: function _setEffectAllowedForDataTransfer(event) {
         var dt = event.dataTransfer;
         // Disallow dropping multiple items
         if (dt.mozItemCount > 1)
@@ -438,7 +438,7 @@ VTTabbrowserTabs.prototype = {
 
     // This function is supposed to show an animation while the tab is being
     // moved (not copied), and to update the tab drop index.
-    _animateTabMove: function(event) {
+    _animateTabMove: function _animateTabMove(event) {
         // Save the drop index here, because the drop handler won't move
         // the tab without that.
         let draggedTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
@@ -456,7 +456,7 @@ VTTabbrowserTabs.prototype = {
          */
     },
 
-    _finishAnimateTabMove: function() {
+    _finishAnimateTabMove: function _finishAnimateTabMove() {
         // TODO we might want to do something here. For now we just
         // don't do anything which is better than doing something stupid.
     },
@@ -464,7 +464,7 @@ VTTabbrowserTabs.prototype = {
     // Calculate the drop indicator's position for vertical tabs.
     // Overwrites what the original 'dragover' event handler does
     // towards the end.
-    onDragOver: function(aEvent) {
+    onDragOver: function onDragOver(aEvent) {
         const tabs = this.tabs;
         let ind = tabs._tabDropIndicator;
         let newIndex = tabs._getDropIndex(aEvent);
