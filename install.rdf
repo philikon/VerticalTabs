@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <Description about="urn:mozilla:install-manifest">
-    <em:id>verticaltabs@bitops.com</em:id>
+    <em:id>verticaltabs@philikon.de</em:id>
     <em:type>2</em:type>
     <em:bootstrap>true</em:bootstrap>
     <em:name>Vertical Tabs</em:name>
-    <em:version>29.0pre</em:version>
-    <em:homepageURL>https://www.bitops.com/vertical-tabs/</em:homepageURL>
+    <em:version>0.10pre</em:version>
+    <em:homepageURL>https://addons.mozilla.org/firefox/addon/vertical-tabs/</em:homepageURL>
+    <em:creator>Philipp von Weitershausen</em:creator>
     <em:creator>Vladimir Vukicevic</em:creator>
-    <em:contributor>Philipp von Weitershausen (original author)</em:contributor>
     <em:contributor>SHIMODA Hiroshi (creator of Tree Style Tab)</em:contributor>
     <em:contributor>bb10 (Linux and Windows theme contributions)</em:contributor>
     <em:contributor>Frank Yan (various theming fixes)</em:contributor>
